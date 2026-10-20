@@ -1,0 +1,48 @@
+# Non-secret configuration. Never put passwords or API keys in this file.
+seed: 42
+
+data:
+  # CSV listing every image and its label (format described in README.md)
+  manifest_csv: data/raw/manifest.csv
+  # Folder that image_path values in the CSV are relative to
+  image_root: data/raw
+  # Folder where validated manifest and split CSVs are written
+  processed_dir: data/processed
+  report_path: reports/data_validation.json
+  check_images_open: true        # open every image once to detect corrupt files
+  wind_range_kt: [0, 200]        # wind speeds outside this range are rejected
+  wind_unit: knots               # all wind labels are expected in knots
+
+preprocessing:
+  image_size: 224                # images are resized to image_size x image_size
+  in_channels: 1                 # 1 = single infrared channel (grayscale)
+  normalization: fixed           # "fixed" (divide by max_pixel_value) or "per_image"
+  max_pixel_value: 255.0
+
+augmentation:                    # applied to the training split only
+  enabled: true
+  max_rotation_deg: 180          # cyclones are roughly rotation invariant
+  brightness_jitter: 0.05
+  horizontal_flip: false         # OFF: flipping reverses the rotation sense of the storm
+
+split:
+  strategy: storm                # "storm" (recommended), "chronological" or "holdout_basin"
+  holdout_basin: null            # only for holdout_basin: basin code to use as the test set
+  train_fraction: 0.70
+  val_fraction: 0.15             # test fraction is the remainder
+
+category:
+  scheme: imd                    # "imd" or "saffir_simpson" - confirm with your guide
+
+training:
+  model: resnet18                # "cnn" (from scratch) or "resnet18" (ImageNet-pretrained)
+  epochs: 25
+  batch_size: 32
+  lr: 0.0003
+  weight_decay: 0.0001
+  dropout: 0.3
+  patience: 8                    # early stopping on validation loss
+  num_workers: 2
+  pretrained: true
+
+artifacts_dir: artifacts

@@ -1,0 +1,5 @@
+# Extra packages for data conversion, training and testing (Colab / your laptop).
+-r requirements.txt
+h5py>=3.9
+tables>=3.8
+pytest>=7.4
